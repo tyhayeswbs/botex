@@ -1,8 +1,8 @@
 # botex: Using LLMs as Experimental Participants in oTree 
 [![PyPI](https://img.shields.io/pypi/v/botex.svg)](https://pypi.python.org/pypi/botex)
 [![PyPI Downloads](https://static.pepy.tech/badge/botex)](https://pepy.tech/projects/botex)
-[![Versions](https://img.shields.io/pypi/pyversions/botex.svg)](https://github.com/joachim-gassen/botex)
-[![License](https://img.shields.io/github/license/joachim-gassen/botex.svg)](https://github.com/joachim-gassen/botex/blob/main/LICENSE)
+[![Versions](https://img.shields.io/pypi/pyversions/botex.svg)](https://pypi.python.org/pypi/botex)
+[![License](https://img.shields.io/github/license/trr266/botex.svg)](https://github.com/trr266/botex/blob/main/LICENSE)
 
 ## Overview
 
@@ -11,7 +11,7 @@ Welcome to the GitHub repository botex, a new Python package that leverages the 
 botex takes a novel approach to integrating LLMs into behavioral experiments. Rather than relying on predefined prompts (see e.g., Grossmann, Engel and Ockenfels ([paper](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4682602), [repo](https://github.com/mrpg/ego))), **botex bots dynamically interact with their experimental environment by scraping their respective oTree participant pages**. This approach allows them to infer the experimental flow solely from the webpage's textual content. By aligning bot behavior directly with the experimental interface, botex eliminates potential discrepancies between human and bot designs. This not only opens up **exciting opportunities to explore LLM behavior** but also positions LLMs as a **powerful tool for developing and pre-testing experiments** intended for human participants.
 
 <p style="text-align: center;">
-  <img src="https://raw.githubusercontent.com/joachim-gassen/botex/main/docs/assets/images/index_botex_workflow.svg" alt="botex Workflow" width="80%">
+  <img src="https://raw.githubusercontent.com/trr266/botex/main/docs/assets/images/index_botex_workflow.svg" alt="botex Workflow" width="80%">
 </p>
 
 ## Why Choose botex?
@@ -33,7 +33,7 @@ For learning how to use botex in your project, please refer to the [package docu
 
 ## Problems and Bugs
 
-If you encounter any problems or bugs, please open a [GitHub issue]((https://github.com/joachim-gassen/botex/issues)).
+If you encounter any problems or bugs, please open a [GitHub issue]((https://github.com/trr266/botex/issues)).
 
 ## Paper
 
@@ -43,7 +43,7 @@ If you use botex in your research, please cite its accompanying paper:
 
 ## Get in touch
 
-If you are interested in this project or even have already tried it, we would love to hear from you. Simply shoot an email, reach out on BlueSky or LinkedIn, or open an [issue on GitHub](https://github.com/joachim-gassen/botex/issues)!
+If you are interested in this project or even have already tried it, we would love to hear from you. Simply shoot an email, reach out on BlueSky or LinkedIn, or open an [issue on GitHub](https://github.com/trr266/botex/issues)!
 
 ## Development
 
@@ -51,7 +51,7 @@ The reminder of this readme is dedicated to the development of botex. If you wan
 
 ### Installation for Development
 
-1. Clone this repository: `git clone https://github.com/joachim-gassen/botex` 
+1. Clone this repository: `git clone https://github.com/trr266/botex` 
 2. Copy `_botex.env` to `botex.env` and edit. Most importantly, you have to set your API key(s) and the configuration of the local llama.cpp instance that you want botex to start. See point 8 below if you only want to start pytest on a specific LLM setup. As the otree instance will only be used for testing, you can set any password and rest key that you like.
 3. Set up a virtural environment `python3 -m venv .venv`
 4. Activate it `source .venv/bin/activate`

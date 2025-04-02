@@ -41,7 +41,7 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://botex.trr266.de"
-Issues = "https://github.com/joachim-gassen/botex/issues"
+Issues = "https://github.com/trr266/botex/issues"
 
 [project.scripts]
 botex = "botex.cli:run_botex"
