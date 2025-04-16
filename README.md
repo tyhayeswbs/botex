@@ -1,3 +1,8 @@
+# WARNING:  THIS IS A CUSTOM FORK
+
+This is a fork of the canonical repository [here](https://github.com/trr266/botex/).  This fork contains customisations and adaptations for our specific use case, and has only been tested on that specific use case.  Unless you are certain that this is the right version of this repository for you, please see the canonical repository linked above or install botex from PyPi to get the standard, unedited version of the package.
+
+
 # botex: Using LLMs as Experimental Participants in oTree 
 [![PyPI](https://img.shields.io/pypi/v/botex.svg)](https://pypi.python.org/pypi/botex)
 [![PyPI Downloads](https://static.pepy.tech/badge/botex)](https://pepy.tech/projects/botex)
