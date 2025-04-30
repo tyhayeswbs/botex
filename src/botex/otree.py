@@ -46,9 +46,14 @@ def setup_botex_db(botex_db = None):
     if not table_exists:
         cursor.execute(
             """
-            CREATE TABLE participants (session_name varchar, session_id char(8), 
-            participant_id char(8), is_human integer, url text, 
-            time_in varchar, time_out varchar)
+            CREATE TABLE participants (
+                    session_name varchar, 
+                    session_id char(8), 
+                    participant_id char(8), 
+                    is_human integer, 
+                    url text, 
+                    time_in varchar, 
+                    time_out varchar)
             """
         )
         conn.commit()
@@ -63,7 +68,11 @@ def setup_botex_db(botex_db = None):
         cursor.execute(
             """
             CREATE TABLE conversations 
-            (id char(8), bot_parms text, conversation text)
+                (id char(8), 
+                 bot_parms text, 
+                 conversation text,
+                 UNIQUE (id)
+                 )
             """
         )
         conn.commit()
