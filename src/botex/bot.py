@@ -449,7 +449,8 @@ def run_bot(**kwargs):
             """
             INSERT INTO conversations (id, bot_parms, conversation) 
             VALUES (?, ?, ?)
-            """, (url[-8:], bot_parms, json.dumps(conv))
+            ON CONFLICT(id) DO UPDATE SET (conversation = ?)
+            """, (url[-8:], bot_parms, json.dumps(conv), json.dumps(conv))
         )
         conn.commit()
         cursor.execute(
