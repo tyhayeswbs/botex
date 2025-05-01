@@ -122,6 +122,15 @@ def run_bot(**kwargs):
         # Find all field validation errors 
         validation_errors = {}
         errors = dr.find_elements(By.CSS_SELECTOR, "input:invalid")
+        otree_serverside_errors = dr.find_elements(By.CSS_SELECTOR, ".otree-form-errors")
+        if len(otree_serverside_errors) > 0:
+            for e in otree_serverside_errors:
+                input_id = dr.find_elements(By.CSS_SELECTOR, "input.form-control")[0].get_attribute("id")
+                validation_errors[input_id] = {
+                    "label": "Guess" if input_id=="id_guess" else "Word for partner to guess",
+                    "validation_message": e.text
+                }
+            return validation_errors
         if len(errors) == 0: return validation_errors
         for e in errors:
             if e.get_attribute("validationMessage"): 
