@@ -586,6 +586,7 @@ def run_bots_on_session(
     thread_kwargs = {
         'botex_db': botex_db, 'session_id': session_id, 
         'full_conv_history': full_conv_history, 
+        'no_mem': no_mem, 
         'model': model, 'api_key': api_key,
         'api_base': api_base,
         'user_prompts': user_prompts,

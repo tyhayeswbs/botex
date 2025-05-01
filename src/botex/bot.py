@@ -40,7 +40,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 
 from .llamacpp import LlamaCpp
-from .schemas import create_answers_response_model, EndSchema, Phase, StartSchema, SummarySchema
+from .schemas import create_answers_response_model, create_answers_response_model_no_mem,EndSchema, Phase, StartSchema, SummarySchema
 from .completion import model_supports_response_schema, completion
 
 
@@ -90,7 +90,7 @@ def run_bot(**kwargs):
     url = kwargs.pop('url')
     model = kwargs.pop('model')
     full_conv_history = kwargs.pop('full_conv_history')
-    no_memory = kwargs.pop('no_memory')
+    no_mem = kwargs.pop('no_mem')
     user_prompts = kwargs.pop('user_prompts')
     prompts = create_prompts(user_prompts)
 
@@ -279,7 +279,10 @@ def run_bot(**kwargs):
             response_format = StartSchema
         elif phase == Phase.middle:
             if questions:
-                response_format = create_answers_response_model(questions)
+                if no_mem:
+                    response_format = create_answers_response_model_no_mem(questions)
+                else:
+                    response_format = create_answers_response_model(questions)
             else:
                 response_format = SummarySchema
         elif phase == Phase.end:
@@ -595,12 +598,12 @@ def run_bot(**kwargs):
             )
         else:
            if questions: 
-            message = prompts[analyze_prompt].format(
-                body = text.strip(), nr_q = nr_q,
-                questions_json = questions_json
-            )
-            else:
-            message = "this is a dummy variable to keep downstream code happy"
+                message = prompts[analyze_prompt].format(
+                    body = text.strip(), nr_q = nr_q,
+                    questions_json = questions_json
+                )
+           else:
+                message = "this is a dummy variable to keep downstream code happy"
 
         if first_page:
             first_page = False
@@ -641,7 +644,7 @@ def run_bot(**kwargs):
                     )
                     message = prompts['page_not_changed_no_vm'] + message
 
-        if not no_mem
+        if not no_mem:
             resp = llm_send_message(
                 message, Phase.middle, check_response, questions=questions
             )
