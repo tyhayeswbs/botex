@@ -90,6 +90,7 @@ def run_bot(**kwargs):
     url = kwargs.pop('url')
     model = kwargs.pop('model')
     full_conv_history = kwargs.pop('full_conv_history')
+    no_memory = kwargs.pop('no_memory')
     user_prompts = kwargs.pop('user_prompts')
     prompts = create_prompts(user_prompts)
 
@@ -489,6 +490,11 @@ def run_bot(**kwargs):
             "role": "system",
             "content": prompts['system_full_hist']
         }    
+    elif no_mem:
+        system_prompt = {
+            "role": "system",
+            "content": prompts['system_no_mem']
+        }    
     else:
         system_prompt = {
             "role": "system",
@@ -499,11 +505,12 @@ def run_bot(**kwargs):
     conv_hist_botex_db = [system_prompt]
     conv_hist = []
 
-    resp = llm_send_message(message, Phase.start, check_response_start)
-    if resp == 'Maximum number of attempts reached.':
-        gracefully_exit_failed_bot("start")
-        return
-    logger.info(f"Bot's response to start message:\n{json.dumps(resp, indent=4)}")
+    if not no_mem:
+        resp = llm_send_message(message, Phase.start, check_response_start)
+        if resp == 'Maximum number of attempts reached.':
+            gracefully_exit_failed_bot("start")
+            return
+        logger.info(f"Bot's response to start message:\n{json.dumps(resp, indent=4)}")
     
     options = Options()
     options.add_argument("--headless=new")
@@ -561,6 +568,11 @@ def run_bot(**kwargs):
                 analyze_prompt = 'analyze_page_q_full_hist'
             else: 
                 analyze_prompt = 'analyze_page_no_q_full_hist'
+        elif no_mem:
+            if questions:
+                analyze_prompt = 'analyze_page_q_no_mem'
+            else:
+                analyze_prompt = "n/a"
         else:
             if first_page:
                 if questions: analyze_prompt = 'analyze_first_page_q'
@@ -576,10 +588,19 @@ def run_bot(**kwargs):
             questions_json = json.dumps(questions)
         check_response = check_response_middle
 
-        message = prompts[analyze_prompt].format(
-            body = text.strip(), summary = summary, nr_q = nr_q,
-            questions_json = questions_json
-        )
+        if not no_mem:
+            message = prompts[analyze_prompt].format(
+                body = text.strip(), summary = summary, nr_q = nr_q,
+                questions_json = questions_json
+            )
+        else:
+           if questions: 
+            message = prompts[analyze_prompt].format(
+                body = text.strip(), nr_q = nr_q,
+                questions_json = questions_json
+            )
+            else:
+            message = "this is a dummy variable to keep downstream code happy"
 
         if first_page:
             first_page = False
@@ -620,15 +641,26 @@ def run_bot(**kwargs):
                     )
                     message = prompts['page_not_changed_no_vm'] + message
 
-        resp = llm_send_message(
-            message, Phase.middle, check_response, questions=questions
-        )
+        if not no_mem
+            resp = llm_send_message(
+                message, Phase.middle, check_response, questions=questions
+            )
+        else:
+            if questions:
+                resp = llm_send_message(
+                    message, Phase.middle, check_response, questions=questions
+                )
+            else:
+                resp = "n/a"
         if resp == 'Maximum number of attempts reached.':
             gracefully_exit_failed_bot("middle")
             return
 
         logger.info(f"Bot's analysis of page:\n{json.dumps(resp, indent=4)}")
-        if not full_conv_history: summary = resp['summary']
+        if not full_conv_history:
+            if not no_mem:
+                summary = resp['summary']
+
         if questions is None and next_button is not None:
             logger.info("Page has no question but next button. Clicking")
             click_on_element(dr, next_button)
@@ -699,7 +731,13 @@ def run_bot(**kwargs):
     
     dr.close()
     dr.quit()
-    message = prompts['end_full_hist'] if full_conv_history else prompts['end'].format(summary = summary)
+    message = ""
+    if full_conv_history:
+        message = prompts['end_full_hist'] 
+    elif no_mem:
+        prompts = prompts['end_no_mem']
+    else: 
+        prompts['end'].format(summary = summary)
     resp = llm_send_message(message, Phase.end, check_response_end)
     if resp == 'Maximum number of attempts reached.':
         gracefully_exit_failed_bot("end")

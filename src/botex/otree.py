@@ -439,6 +439,7 @@ def run_bots_on_session(
         api_base: str | None = None,
         throttle: bool = False,
         full_conv_history: bool = False,
+        no_mem: bool = False,
         user_prompts: dict | None = None,
         already_started: bool = False,
         wait: bool = True,
