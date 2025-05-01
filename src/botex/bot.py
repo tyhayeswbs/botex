@@ -292,6 +292,8 @@ def run_bot(**kwargs):
             conversation.append(message)
             conv_hist_botex_db.append(message)
 
+
+
         if conv_hist: conversation = conv_hist
 
         resp_dict = None
@@ -299,6 +301,7 @@ def run_bot(**kwargs):
         attempts = 0
         max_attempts = 5
         append_message_to_conversation({"role": "user", "content": message})
+        store_data(botex_db, session_id, url, conv_hist_botex_db, bot_parms)
         while resp_dict is None:
             if attempts > max_attempts:
                 logger.error("The llm did not return a valid response after %s attempts." % max_attempts)
@@ -306,6 +309,7 @@ def run_bot(**kwargs):
             attempts += 1
             if error:
                 append_message_to_conversation({"role": "user", "content": message})
+                store_data(botex_db, session_id, url, conv_hist_botex_db, bot_parms)
                 logger.info(
                     f"Sending the following conversation to the llm to fix error:\n{json.dumps(conversation, indent=4)}"
                 )
@@ -322,6 +326,7 @@ def run_bot(**kwargs):
                 conversation = conversation[:-2]
 
             append_message_to_conversation({"role": "assistant", "content": resp_str})
+            store_data(botex_db, session_id, url, conv_hist_botex_db, bot_parms)
             
             if resp['finish_reason'] == "length":
                 logger.warning("Bot's response is too long. Trying again.")
@@ -449,7 +454,7 @@ def run_bot(**kwargs):
             """
             INSERT INTO conversations (id, bot_parms, conversation) 
             VALUES (?, ?, ?)
-            ON CONFLICT(id) DO UPDATE SET (conversation = ?)
+            ON CONFLICT(id) DO UPDATE SET conversation = ?
             """, (url[-8:], bot_parms, json.dumps(conv), json.dumps(conv))
         )
         conn.commit()
