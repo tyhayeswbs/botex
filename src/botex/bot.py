@@ -747,7 +747,10 @@ def run_bot(**kwargs):
     if full_conv_history:
         message = prompts['end_full_hist'] 
     elif no_mem:
-        prompts = prompts['end_no_mem']
+        #    prompts = prompts['end_no_mem']
+        # bot with no memory makes no sense to ask for general remarks
+        logger.info("Bot finished.")
+        store_data(botex_db, session_id, url, conv_hist_botex_db, bot_parms)
     else: 
         prompts['end'].format(summary = summary)
     resp = llm_send_message(message, Phase.end, check_response_end)
