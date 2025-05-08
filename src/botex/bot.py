@@ -44,7 +44,7 @@ from .schemas import create_answers_response_model, create_answers_response_mode
 from .completion import model_supports_response_schema, completion
 
 
-MAX_NUM_OF_ANSWER_ATTEMPTS = 3
+MAX_NUM_OF_ANSWER_ATTEMPTS = 5
 MAX_NUM_OF_SCRAPE_ATTEMPTS = 5
 MAX_NUM_OF_ATTEMPTS_TO_START_CHROME = 5
 
@@ -121,6 +121,17 @@ def run_bot(**kwargs):
         if not check_errors: return 
         # Find all field validation errors 
         validation_errors = {}
+
+        otree_serverside_errors = dr.find_elements(By.CSS_SELECTOR, ".otree-form-errors")
+        if len(otree_serverside_errors) > 0:
+            for e in otree_serverside_errors:
+                input_id = dr.find_elements(By.CSS_SELECTOR, "input.form-control")[0].get_attribute("id")
+                validation_errors[input_id] = {
+                    "label": "Guess" if input_id=="id_guess" else "Word for partner to guess",
+                    "validation_message": e.text
+                }
+            return validation_errors
+
         errors = dr.find_elements(By.CSS_SELECTOR, "input:invalid")
         otree_serverside_errors = dr.find_elements(By.CSS_SELECTOR, ".otree-form-errors")
         if len(otree_serverside_errors) > 0:
@@ -528,6 +539,7 @@ def run_bot(**kwargs):
     options.add_argument("--headless=new")
     # Needed to work on codespaces but might be a security risk on
     # untrusted web pages
+    logger.warning("Running Chrome as root with --no-sandbox.  This seems like a bad idea")
     options.add_argument("--no-sandbox")
     # Should result in only fatal errors being logged
     options.add_argument("--log-level=3")
@@ -543,7 +555,6 @@ def run_bot(**kwargs):
             logger.warning("Could not start Chrome. Trying again.")
             if attempts == 5:
                 logger.error(f"Could not start Chrome after {MAX_NUM_OF_ATTEMPTS_TO_START_CHROME} attempts. Stopping.")
-                raise   
             time.sleep(1)
         
     first_page = True
@@ -551,6 +562,22 @@ def run_bot(**kwargs):
     text = ""
     answer_attempts = 0
     validation_errors = {}
+
+    server_side_validation_errors = {}
+    def check_for_server_side_validation():
+        otree_serverside_errors = dr.find_elements(By.CSS_SELECTOR, ".otree-form-errors")
+        if len(otree_serverside_errors) > 0:
+            for e in otree_serverside_errors:
+                input_id = dr.find_elements(By.CSS_SELECTOR, "input.form-control")[0].get_attribute("id")
+                validation_errors[input_id] = {
+                    "label": "Guess" if input_id=="id_guess" else "Word for partner to guess",
+                    "validation_message": e.text
+                }
+            return validation_errors
+        else:
+            validation_errors = {}
+
+
     if TEST_FORM_VALIDATION_ERRORS: first_try = True
     while True:
         old_text = text
@@ -565,6 +592,7 @@ def run_bot(**kwargs):
                 if attempts == 5:
                     logger.error(f"Could not scrape my oTree URL after {MAX_NUM_OF_SCRAPE_ATTEMPTS} attempts. Stopping.")
                     gracefully_exit_failed_bot("middle")
+                    raise
                     return
                 time.sleep(1)
         
@@ -623,6 +651,11 @@ def run_bot(**kwargs):
                     message
                 )
         
+        server_side_validation_errors = check_for_server_side_validation()
+
+        if not server_side_validation_errors:
+            answer_attempts = 0
+
         if old_text == text:
             if answer_attempts > MAX_NUM_OF_ANSWER_ATTEMPTS:
                 logger.error(
