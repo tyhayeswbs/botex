@@ -514,7 +514,8 @@ def run_bot(**kwargs):
     options.add_argument("--headless=new")
     # Needed to work on codespaces but might be a security risk on
     # untrusted web pages
-    #options.add_argument("--no-sandbox")
+    logger.warning("Running Chrome as root with --no-sandbox.  This seems like a bad idea")
+    options.add_argument("--no-sandbox")
     # Should result in only fatal errors being logged
     options.add_argument("--log-level=3")
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
@@ -529,7 +530,6 @@ def run_bot(**kwargs):
             logger.warning("Could not start Chrome. Trying again.")
             if attempts == 5:
                 logger.error(f"Could not start Chrome after {MAX_NUM_OF_ATTEMPTS_TO_START_CHROME} attempts. Stopping.")
-                raise   
             time.sleep(1)
         
     first_page = True
@@ -567,6 +567,7 @@ def run_bot(**kwargs):
                 if attempts == 5:
                     logger.error(f"Could not scrape my oTree URL after {MAX_NUM_OF_SCRAPE_ATTEMPTS} attempts. Stopping.")
                     gracefully_exit_failed_bot("middle")
+                    raise
                     return
                 time.sleep(1)
         
