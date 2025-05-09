@@ -56,7 +56,7 @@ The reminder of this readme is dedicated to the development of botex. If you wan
 
 ### Installation for Development
 
-1. Clone this repository: `git clone https://github.com/trr266/botex` 
+1. Clone this repository: `git clone https://github.com/tyhayeswbs/botex` 
 2. Copy `_botex.env` to `botex.env` and edit. Most importantly, you have to set your API key(s) and the configuration of the local llama.cpp instance that you want botex to start. See point 8 below if you only want to start pytest on a specific LLM setup. As the otree instance will only be used for testing, you can set any password and rest key that you like.
 3. Set up a virtural environment `python3 -m venv .venv`
 4. Activate it `source .venv/bin/activate`
