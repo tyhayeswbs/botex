@@ -454,7 +454,7 @@ def run_bot(**kwargs):
             result = "Bot could not provide a valid response. Exiting."        
         conv_hist_botex_db.append({"role": "system", "content": result})
         store_data(botex_db, session_id, url, conv_hist_botex_db, bot_parms)
-        logger.info("Gracefully exiting failed bot.")
+        logger.warn("Gracefully exiting failed bot.")
         if failure_place != "start" and failure_place != "end":
             dr.close()
             dr.quit()
