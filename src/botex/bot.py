@@ -784,6 +784,7 @@ def run_bot(**kwargs):
         # bot with no memory makes no sense to ask for general remarks
         logger.info("Bot finished.")
         store_data(botex_db, session_id, url, conv_hist_botex_db, bot_parms)
+        return
     else: 
         prompts['end'].format(summary = summary)
     resp = llm_send_message(message, Phase.end, check_response_end)
