@@ -4,7 +4,7 @@ This is a fork of the canonical repository [here](https://github.com/trr266/bote
 
 ## Main changes:
 
-- creation of 'no memory' bot option:
+- creation of 'no memory' bot option, which does not keep it's own summary of the experiment so far.  (Responsibility for providing context is devolved to the oTree code for this type of bot).
     - addition of kwarg to `botex.bot.run_bot()`: no_mem (boolean, defaults to false), which tells the bot to run without keeping a summary
     - additional system level prompts for this type of bot (see `botex.bot_prompts` entries with id *_no_mem)
     - creation of response schema for this type of bot (see `botex.schemas.ResponseNoMem` and `botex.schemas.create_answers_response_model_no_mem()`)
