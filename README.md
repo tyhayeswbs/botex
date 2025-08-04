@@ -2,6 +2,16 @@
 
 This is a fork of the canonical repository [here](https://github.com/trr266/botex/).  This fork contains customisations and adaptations for our specific use case, and has only been tested on that specific use case.  Unless you are certain that this is the right version of this repository for you, please see the canonical repository linked above or install botex from PyPi to get the standard, unedited version of the package.
 
+## Main changes:
+
+- creation of 'no memory' bot option:
+    - addition of kwarg to `botex.bot.run_bot()`: no_mem (boolean, defaults to false), which tells the bot to run without keeping a summary
+    - additional system level prompts for this type of bot (see `botex.bot_prompts` entries with id *_no_mem)
+    - creation of response schema for this type of bot (see `botex.schemas.ResponseNoMem` and `botex.schemas.create_answers_response_model_no_mem()`)
+- detection of (otree) server side validation errors (as created by error_message() functions [1](https://otree.readthedocs.io/en/latest/forms.html#field-name-error-message), [2](https://otree.readthedocs.io/en/latest/forms.html#validating-multiple-fields-together) and reporting to the LLM
+- make the system store the conversation data on every generated response, rather than keeping it all in memory until the end of the experimenter
+
+
 
 # botex: Using LLMs as Experimental Participants in oTree 
 [![PyPI](https://img.shields.io/pypi/v/botex.svg)](https://pypi.python.org/pypi/botex)
